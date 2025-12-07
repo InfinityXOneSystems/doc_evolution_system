@@ -132,11 +132,11 @@ def cmd_status(args):
     for doc_name in docs:
         doc = system.get_document(doc_name)
         try:
-            with open(doc.path, 'r') as f:
+            with open(doc.path, 'r', encoding='utf-8') as f:
                 current_content = f.read()
             if doc.has_changed(current_content):
                 changed.append(doc_name)
-        except FileNotFoundError:
+        except (FileNotFoundError, UnicodeDecodeError):
             pass
     
     if changed:

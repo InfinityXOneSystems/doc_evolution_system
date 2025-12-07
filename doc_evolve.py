@@ -124,7 +124,7 @@ class DocumentEvolutionSystem:
         """Load system state from disk."""
         state_file = self._state_file()
         if state_file.exists():
-            with open(state_file, 'r') as f:
+            with open(state_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
                 self.documents = {
                     name: Document.from_dict(doc_data)
@@ -140,19 +140,23 @@ class DocumentEvolutionSystem:
                 for name, doc in self.documents.items()
             }
         }
-        with open(state_file, 'w') as f:
+        with open(state_file, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2)
     
     def track_document(self, file_path: str, metadata: Optional[Dict[str, Any]] = None) -> Document:
         """Start tracking a document."""
-        path = Path(file_path)
+        path = Path(file_path).resolve()
         if not path.exists():
             raise FileNotFoundError(f"Document not found: {file_path}")
         
-        with open(path, 'r') as f:
+        with open(path, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        doc_name = str(path.relative_to(self.root_path))
+        try:
+            doc_name = str(path.relative_to(self.root_path.resolve()))
+        except ValueError:
+            # If path is not under root_path, use absolute path
+            doc_name = str(path)
         
         if doc_name not in self.documents:
             self.documents[doc_name] = Document(doc_name, str(path))
@@ -168,14 +172,18 @@ class DocumentEvolutionSystem:
     
     def update_document(self, file_path: str, metadata: Optional[Dict[str, Any]] = None) -> Optional[DocumentVersion]:
         """Update a tracked document with new content."""
-        path = Path(file_path)
+        path = Path(file_path).resolve()
         if not path.exists():
             raise FileNotFoundError(f"Document not found: {file_path}")
         
-        with open(path, 'r') as f:
+        with open(path, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        doc_name = str(path.relative_to(self.root_path))
+        try:
+            doc_name = str(path.relative_to(self.root_path.resolve()))
+        except ValueError:
+            # If path is not under root_path, use absolute path
+            doc_name = str(path)
         
         if doc_name not in self.documents:
             # Track it first
@@ -225,7 +233,7 @@ class DocumentEvolutionSystem:
             raise ValueError(f"Version {version_number} not found for {doc_name}")
         
         target_path = output_path or doc.path
-        with open(target_path, 'w') as f:
+        with open(target_path, 'w', encoding='utf-8') as f:
             f.write(version.content)
         
         return version
