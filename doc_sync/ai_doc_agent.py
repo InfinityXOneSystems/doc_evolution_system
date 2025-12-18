@@ -1,3 +1,2 @@
-﻿def generate_doc_update(context: dict) -> str:
-    # AI gateway intentionally abstracted
-    return '# Updated documentation placeholder'
+﻿def generate_doc_update(ctx):
+    return "# placeholder"
