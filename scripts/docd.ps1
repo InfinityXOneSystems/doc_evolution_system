@@ -1,13 +1,9 @@
-﻿# ======================================================================
-# 🔱 DOC EVOLUTION DAEMON (docd)
-# MODE: FAANG • IMMORTAL • TRI-WAY • SELF-HEALING
-# ======================================================================
-
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 
 $ROOT = "C:\AI\repos\doc_evolution_system"
 $LOGS = Join-Path $ROOT "logs"
-$SLEEP_SECONDS = 300  # 5 minutes
+$SLEEP = 300
+$PYTHON = "python"
 
 New-Item -ItemType Directory -Force $LOGS | Out-Null
 
@@ -22,26 +18,25 @@ while ($true) {
     try {
         Set-Location $ROOT
 
-        Log "🔍 Running doc sync cycle"
+        $gate = & $PYTHON -c "from guards.workspace_gate import workspace_allows_execution; print('ALLOW' if workspace_allows_execution() else 'DENY')"
+        if ($gate -notmatch "ALLOW") {
+            Log "⛔ Workspace gate blocked execution"
+            Start-Sleep -Seconds $SLEEP
+            continue
+        }
 
-        python -c "
-import sys
-sys.path.insert(0,'.')
-from doc_sync.sync_orchestrator import run_local_doc_sync
-run_local_doc_sync()
-print('SYNC_OK')
-"
+        Log "🔍 Running doc sync"
+        & $PYTHON -c "import sys; sys.path.insert(0,'.'); from doc_sync.sync_orchestrator import run_local_doc_sync; run_local_doc_sync()"
 
-        Log "📦 Git sync"
         git add . | Out-Null
-        git commit -m \"docd: automated doc evolution\" 2>$null | Out-Null
+        git commit -m "docd: auto-heal cycle" 2>$null | Out-Null
         git push origin main 2>$null | Out-Null
 
-        Log "✅ cycle complete"
+        Log "✅ Cycle complete"
     }
     catch {
-        Log \"⚠️ ERROR: $($_.Exception.Message)\"
+        Log "⚠️ ERROR: $($_.Exception.Message)"
     }
 
-    Start-Sleep -Seconds $SLEEP_SECONDS
+    Start-Sleep -Seconds $SLEEP
 }

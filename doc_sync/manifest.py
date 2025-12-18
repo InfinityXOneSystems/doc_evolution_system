@@ -6,6 +6,7 @@ DEFAULT = {"generated_at": "", "docs": []}
 
 def build_manifest():
     MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
+
     if not MANIFEST_PATH.exists():
         MANIFEST_PATH.write_text(json.dumps(DEFAULT, indent=2))
         return DEFAULT
