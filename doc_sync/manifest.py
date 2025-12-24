@@ -1,12 +1,19 @@
 ﻿import json
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 MANIFEST_PATH = Path("docs/meta/docs_manifest.json")
 DEFAULT = {"generated_at": "", "docs": []}
 
 ROOT = Path(__file__).resolve().parents[3]
-AUTO_DOCS = ROOT / "services" / "real-estate-intelligence" / "doc-evolution-system" / "docs" / "auto-docs"
+AUTO_DOCS = (
+    ROOT
+    / "services"
+    / "real-estate-intelligence"
+    / "doc-evolution-system"
+    / "docs"
+    / "auto-docs"
+)
 
 
 def build_manifest():
@@ -31,11 +38,16 @@ def build_manifest():
     try:
         if AUTO_DOCS.exists():
             for p in sorted(AUTO_DOCS.glob("*.md")):
-                docs.append({
-                    "path": str(p.relative_to(ROOT)),
-                    "name": p.name,
-                    "updated_at": datetime.utcfromtimestamp(p.stat().st_mtime).isoformat() + "Z",
-                })
+                docs.append(
+                    {
+                        "path": str(p.relative_to(ROOT)),
+                        "name": p.name,
+                        "updated_at": datetime.utcfromtimestamp(
+                            p.stat().st_mtime
+                        ).isoformat()
+                        + "Z",
+                    }
+                )
     except Exception:
         pass
 

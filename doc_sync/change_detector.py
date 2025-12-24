@@ -1,12 +1,25 @@
-﻿import json
-from pathlib import Path
-import csv
+﻿import csv
+import json
 from datetime import datetime
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
-STATE_PATH = ROOT / "services" / "real-estate-intelligence" / "doc-evolution-system" / ".docd_state.json"
+STATE_PATH = (
+    ROOT
+    / "services"
+    / "real-estate-intelligence"
+    / "doc-evolution-system"
+    / ".docd_state.json"
+)
 IDX_PATH = ROOT / "index" / "memory_index.csv"
-DOCS_DIR = ROOT / "services" / "real-estate-intelligence" / "doc-evolution-system" / "docs" / "auto-docs"
+DOCS_DIR = (
+    ROOT
+    / "services"
+    / "real-estate-intelligence"
+    / "doc-evolution-system"
+    / "docs"
+    / "auto-docs"
+)
 
 
 def _load_state():
@@ -62,7 +75,9 @@ def detect_changes():
                 content.append(preview)
                 doc_path.write_text("\n".join(content), encoding="utf-8")
 
-                changes.append({"id": rid, "doc_path": str(doc_path), "tenant_id": tenant})
+                changes.append(
+                    {"id": rid, "doc_path": str(doc_path), "tenant_id": tenant}
+                )
     except Exception:
         return {"changes": []}
 
