@@ -1,5 +1,5 @@
-﻿import datetime
-import os
+﻿import os
+
 
 def calendar_allows_execution() -> bool:
     """

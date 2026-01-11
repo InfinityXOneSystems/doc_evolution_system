@@ -10,6 +10,7 @@ DEFAULT_POLICY = {
     "require_context_keys": ["source", "intent", "repo"]
 }
 
+
 def _load_policy():
     try:
         raw = POLICY_PATH.read_text().strip()
@@ -20,7 +21,9 @@ def _load_policy():
         POLICY_PATH.write_text(json.dumps(DEFAULT_POLICY, indent=2))
         return DEFAULT_POLICY
 
+
 POLICY = _load_policy()
+
 
 def guardian_approve(context: dict) -> bool:
     for k in POLICY["require_context_keys"]:
